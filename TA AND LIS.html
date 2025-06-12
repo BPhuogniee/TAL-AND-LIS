@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TALK AND LIS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Fredoka', sans-serif;
+      background: linear-gradient(to bottom, #ffe3ec, #d1f7d6);
+      color: #333;
+      text-align: center;
+      padding: 20px;
+      user-select: none;
+    }
+    .title {
+      font-size: 2.5em;
+      color: #ff69b4;
+      margin-bottom: 20px;
+    }
+    .players {
+      margin-bottom: 15px;
+    }
+    input[type="text"] {
+      padding: 8px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      margin: 0 10px;
+      font-size: 1em;
+      width: 140px;
+      max-width: 45vw;
+    }
+    .btn {
+      background-color: #98f5c9;
+      border: none;
+      border-radius: 20px;
+      padding: 12px 20px;
+      margin: 10px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: 0.3s;
+      color: #333;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+    }
+    .btn:hover {
+      background-color: #72e5a9;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+    }
+    .result {
+      margin-top: 30px;
+      font-size: 1.3em;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      min-height: 120px;
+      line-height: 1.4em;
+    }
+    .wheel-container {
+      margin: 30px auto;
+      width: 120px;
+      height: 120px;
+      border: 6px dashed #ff69b4;
+      border-radius: 50%;
+      font-size: 60px;
+      line-height: 120px;
+      color: #ff69b4;
+      user-select: none;
+      display: none;
+      animation-duration: 2s;
+      animation-timing-function: ease-out;
+      animation-fill-mode: forwards;
+    }
+    .spin {
+      display: block !important;
+      animation-name: spin;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(1080deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="title">TA AND LIS 💖🎲</div>
+  <div class="players">
+    <input type="text" id="player1" placeholder="Tên người chơi 1" value="Người chơi 1" />
+    <input type="text" id="player2" placeholder="Tên người chơi 2" value="Người chơi 2" />
+  </div>
+  <button class="btn" onclick="spinWheel()">UPIN IPIN 🎡</button>
+  
+  <div id="wheel" class="wheel-container">🎡</div>
+  <div class="result" id="result"></div>
+
+  <script>
+    const truths = [
+      "Anh/Em có cảm thấy bản thân được thấu hiểu không?",
+      "Điều gì khiến anh/em cảm thấy chưa đủ?",
+      "Anh/Em đang chạy trốn điều gì mà chính mình cũng không nhận ra?",
+      "Nếu phải đặt tên cho giai đoạn hiện tại của đời mình, ta sẽ gọi nó là gì?",
+      "Đâu là điều khiến anh/em mất niềm tin vào tình yêu?",
+      "Trong tình yêu, anh/em sợ bị bỏ rơi hay bị lãng quên hơn?",
+      "Anh/Em có bao giờ tự hỏi mình thật sự muốn điều gì trong đời không?",
+      "Anh/Em có thể share về lần em/anh cảm thấy tổn thương nhất không?",
+      "Nếu được quay về quá khứ, anh/em muốn thay đổi điều gì nhất?",
+      "Anh/Em nghĩ điều gì sẽ khiến mình tổn thương nhất?",
+      "Anh/Em có từng ghét chính mình không? Vì điều gì?",
+      "Anh/Em có đang sống vì chính mình không?",
+      "Anh/Em nghĩ linh hồn mình từng trải qua bao nhiêu lần tổn thương?",
+      "Anh/Em có từng thấy mình giả vờ tử tế để giữ hình ảnh",
+      "Anh/Em có từng thấy mình yếu đuối khi khóc",
+      "Anh/Em có từng sợ đưa ra quyết định vì sợ sai, sợ bị trách móc không?",
+      "Anh/Em có từng ghét một phần chính mình không?",
+      "Điều anh/em ghét nhất ở chính mình là gì?",
+      "Lần cuối anh/em khóc là khi nào?",
+      "Khi ở một mình, cảm xúc đầu tiên của anh/em là gì?",
+      "Anh/Em có từng thấy mình không đủ tốt để xứng đáng với sự yêu thương không?",
+      "Có người nào ở trong đời khiến anh/em thấy mình bé lại không?",
+      "Anh/Em có đang là chính mình không?",
+      "Anh/Em nghĩ tình yêu là sự chữa lành hay chỉ làm dịu đi vết thương lòng?",
+      "Anh/Em thích được ôm hay được hôn hơn?",
+      "Anh/Em có thể chấp nhận ai đó hoàn toàn kể cả bóng tối của họ không?",
+      "Khi yêu ai đó, điều đầu tiên anh/em hi sinh là gì?",
+      "Anh/Em có tin soulmate, linh hồn đồng điệu không?",
+      "Nếu hôm nay được reset cảm xúc, anh/em sẽ khác đi như thế nào?",
+      "Anh/Em thường tránh cảm xúc nào nhất chỉ vì sợ nó nuốt chửng mình?"
+    ];
+
+    const dares = [
+      "Call cho một ai đó và nói 'Cảm ơn vì đã từng có mặt trong cuộc đời mình'",
+      "Viết một lá thư ngắn cho 'phiên bản mình năm 10 tuổi'",
+      "Chia sẻ một điều khiến anh/em tự hào hiếm khi kể với ai",
+      "Kể một vết thương lòng mà anh/em nghĩ mình đã chữa lành",
+      "Share thật lòng những gì anh/em kì vọng ở một mối quan hệ",
+      "Chọn một bài hát khiến anh/em buồn khi nghe và  giải thích vì sao",
+      "Nói 'Mình cute quá' 5 lần liên tục",
+      "Nói điều mà anh/em ngưỡng mộ ở đối phương",
+      "Nắm tay người mà anh/em thấy an toàn khi ở cạnh",
+      "Miêu tả người đẹp trong mắt anh/em",
+      "Hãy miêu tả đứa trẻ bên trong anh/em, nó đang cảm thấy gì lúc này?",
+      "Kể về một phần bóng tối trong con người anh/em",
+      "Viết 3 điều ước của anh/em",
+      "Share cảm xúc mà anh/em đang giấu lúc này",
+      "Up social khoảnh khắc mà anh/em thấy thích nhất",
+      "Tạo dáng trái tim bằng tay",
+      "Giả tiếng khóc em bé",
+      "Hát 1 câu tiếng nước ngoài",
+      "Nói điều bạn đang nghĩ to nhất có thể",
+      "Kể tên 3 món ăn bạn ghét nhất",
+      "Đọc nhanh câu 'Ba con cá cắn câu' 5 lần",
+      "Calling cho bạn thân rồi nói nhớ họ",
+      "Vẽ một trái tim trong không khí",
+      "Đổi avatar điện thoại thành hình bạn hiện tại",
+      "Gửi 1 tin nhắn cute cho ai đó bất kỳ",
+      "Tạo dáng ngầu nhất trong 3 giây",
+      "Thách mấy người dám xin số của ai đó",
+      "Nói tên đầy đủ của bạn theo giọng con nít",
+      "Cười thật to 'HAHAHA' 3 lần",
+      "Đọc 1 đoạn văn như đang giận dữ"
+    ];
+
+    function spinWheel() {
+      const p1 = document.getElementById("player1").value.trim() || "Người chơi 1";
+      const p2 = document.getElementById("player2").value.trim() || "Người chơi 2";
+
+      const wheel = document.getElementById("wheel");
+      const resultBox = document.getElementById("result");
+
+      // Ẩn kết quả cũ, hiện vòng quay
+      resultBox.innerHTML = "";
+      wheel.classList.add("spin");
+      wheel.style.display = "block";
+
+      // Chọn người chơi ngẫu nhiên nhưng chưa hiện tên
+      const chosenPlayer = Math.random() < 0.5 ? p1 : p2;
+
+      // Sau 2 giây quay, ẩn vòng quay, hiện kết quả
+      setTimeout(() => {
+        wheel.classList.remove("spin");
+        wheel.style.display = "none";
+
+        const mode = Math.random() < 0.5 ? "Hỏi thật" : "Làm thật";
+        const content = mode === "Hỏi thật"
+          ? truths[Math.floor(Math.random() * truths.length)]
+          : dares[Math.floor(Math.random() * dares.length)];
+
+        resultBox.innerHTML = `
+          👉 <b>${chosenPlayer}</b> sẽ chơi!<br>
+          💡 Nhiệm vụ: <b>${mode}</b><br><br>
+          🎁 <i>${content}</i>
+        `;
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
